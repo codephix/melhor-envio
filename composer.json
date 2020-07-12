@@ -1,0 +1,23 @@
+{
+  "name": "codephix/melhorenvio-sdk",
+  "type"       : "library",
+  "description": "Melhor Envio PHP API Wrapper",
+  "keywords"   : ["Melhor"],
+  "homepage": "http://www.codephix.com",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Max Alex",
+      "email": "contato@codephix.com.br",
+      "homepage": "https://www.codephix.com"
+    }
+  ],
+  "require": {
+    "php": "^7.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "CodePhix\\MelhorEnvio\\": "src"
+    }
+  }
+}
