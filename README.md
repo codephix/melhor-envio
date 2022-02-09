@@ -1,306 +1,321 @@
-# Asaas @CodePhix
+<h1 align="center">SDK para Melhor Envio</h1>
 
-SDK não-oficial de integração á API do serviço www.asaas.com
+<p align="center">
+    <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=0d7bbd" />
+    <img src="https://img.shields.io/static/v1?label=version&message=BETA&color=0d7bbd" />
+</p>
 
-[![Maintainer](http://img.shields.io/badge/maintainer-@codephix-blue.svg?style=flat-square)](https://twitter.com/codephix)
-[![Source Code](https://img.shields.io/badge/source-codephix/asaas--sdk-blue.svg?style=flat-square)](https://github.com/codephix/asaas-sdk)
-[![PHP from Packagist](https://img.shields.io/packagist/php-v/codephix/asaas-sdk.svg?style=flat-square)](https://packagist.org/packages/codephix/asaas-sdk)
-[![Latest Version](https://img.shields.io/github/release/codephix/asaas-sdk.svg?style=flat-square)](https://github.com/codephix/asaas-sdk/releases)
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
-[![Build](https://img.shields.io/scrutinizer/build/g/codephix/asaas-sdk.svg?style=flat-square)](https://scrutinizer-ci.com/g/codephix/asaas-sdk)
-[![Quality Score](https://img.shields.io/scrutinizer/g/codephix/asaas-sdk.svg?style=flat-square)](https://scrutinizer-ci.com/g/codephix/asaas-sdk)
-[![Total Downloads](https://img.shields.io/packagist/dt/codephix/asaas-sdk.svg?style=flat-square)](https://packagist.org/packages/codephix/asaas-sdk)
 
 
-### Projeto em andamento
+<p align="center">🚀 SDK para facilitar a integração com a plataforma Melhor Envio. Utilizando a liguagem PHP.</p>
 
+<h3>Índice</h3>
 
-## Installation
+<!--ts-->
+   * [Instalação](#instalação)
+   * [Autenticação](#autenticação)
+   * [Renovando Token](#renovando-token)
+   * [Calculando Frete](#calculando-frete)
+   * [Etiquetas](#etiquetas)
+      * [Solicitando Compra](#solicitando-compra)
+      * [Processar Compra](#processar-compra)
+      * [Gerar Etiquetas](#gerar-etiquetas)
+      * [Recuperar Código de Rastreio](#recuperar-código-de-rastreio)
+<!--te-->
 
-```bash
-composer require codephix/asaas-sdk
-```
+## Instalação
 
-Exemplo
--------
+Para instalar esse componente em seu projeto utilize o composer. ````composer require duug-com-br/melhorenvio-sdk-php````
 
-```php
-<?php
+## Autenticação
 
-require 'vendor/autoload.php';
+Primeiro você deve solicitar a permissão para utilização do aplicativo. Para isso utilize esse codigo de exemplo. 
 
-use CodePhix\Asaas;
-
-// Instancie o cliente Asaas usando a instância do adapter previamente criada.
-$asaas = new Asaas('seu_token_de_acesso');
-```
-
-Endpoint
---------
-
-Caso queira usar a API em modo teste basta especificar o `ambiente` no momento em que o cliente é instanciado.
-
-```php
-// Obs.: Caso não seja informado o segundo parâmetro a API entra em modo de produção
-$asaas = new Asaas('seu_token_de_acesso', 'producao|homologacao');
-```
-
-
-Clientes
---------
-
-```php
-// Retorna a listagem de clientes
-$clientes = $asaas->cliente->getAll(array $filtros);
-
-// Retorna os dados do cliente de acordo com o Id
-$cobranca = $asaas->cliente->getById(123);
-
-// Retorna os dados do cliente de acordo com o Email
-$clientes = $asaas->cliente->getByEmail('email@mail.com');
-
-// Insere um novo cliente
-$clientes = $asaas->cliente->create(array $dadosCliente);
-
-// Atualiza os dados do cliente
-$clientes = $asaas->cliente->update(123, array $dadosCliente);
-
-// Restaura um cliente
-$asaas->cliente->restaura(123);
-
-// Deleta uma cliente
-$asaas->cliente->delete(123);
-```
-
-
-Cobranças
-------------
-
-```php
-// Retorna a listagem de cobranças
-$cobrancas = $asaas->cobranca->getAll(array $filtros);
-
-// Retorna os dados da cobrança de acordo com o Id
-$cobranca = $asaas->cobranca->getById(123);
-
-// Retorna a listagem de cobranças de acordo com o Id do Cliente
-$cobrancas = $asaas->cobranca->getByCustomer($customer_id);
-
-// Retorna a listagem de cobranças de acordo com o Id da Assinaturas
-$cobrancas = $asaas->cobranca->getBySubscription($subscription_id);
-
-// Insere uma nova cobrança
-$cobranca = $asaas->cobranca->create(array $dadosCobranca);
-
-// Insere uma nova cobrança parcelada
-$cobranca = $asaas->cobranca->parcelada(array $dadosCobranca);
-
-// Insere uma nova cobrança com split 
-/* Saldo dividido em multiplas contas do Asaas*/
-$cobranca = $asaas->cobranca->parcelada(array $dadosCobranca);
-
-// Atualiza os dados da cobrança
-$cobranca = $asaas->cobranca->update(123, array $dadosCobranca);
-
-// Restaura cobrança removida
-$cobranca = $asaas->cobranca->restore(id);
-
-// Estorna cobrança
-$cobranca = $asaas->cobranca->estorno(id);
-
-// Confirmação em dinheiro
-$cobranca = $asaas->cobranca->confirmacao(id);
-
-// Deleta uma cobrança
-$asaas->cobranca->delete(123);
-```
-
-
-Assinaturas
-------------
-
-```php
-
-
-
-Os status possíveis de uma cobrança são os seguintes:
-
-[PENDING] - Aguardando pagamento
-
-[RECEIVED] - Recebida (saldo já creditado na conta)
-
-[CONFIRMED] - Pagamento confirmado (saldo ainda não creditado)
-
-[OVERDUE] - Vencida
-
-[REFUNDED] - Estornada
-
-[RECEIVED_IN_CASH] - Recebida em dinheiro (não gera saldo na conta)
-
-[REFUND_REQUESTED] - Estorno Solicitado
-
-[CHARGEBACK_REQUESTED] - Recebido chargeback
-
-[CHARGEBACK_DISPUTE] - Em disputa de chargeback (caso sejam apresentados documentos para contestação)
-
-[AWAITING_CHARGEBACK_REVERSAL] - Disputa vencida, aguardando repasse da adquirente
-
-[DUNNING_REQUESTED] - Em processo de recuperação
-
-[DUNNING_RECEIVED] - Recuperada
-
-[AWAITING_RISK_ANALYSIS] - Pagamento em análise
-
-
-// Retorna a listagem de assinaturas
-$assinaturas = $asaas->assinatura->getAll(array $filtros);
-
-// Retorna os dados da assinatura de acordo com o Id
-$assinatura = $asaas->assinatura->getById(123);
-
-// Retorna a listagem de assinaturas de acordo com o Id do Cliente
-$assinaturas = $asaas->assinatura->getByCustomer($customer_id);
-
-// Insere uma nova assinatura
-
-/*
-
-Assinatura via Boleto
-
-$dadosAssinatura = array(
-  "customer" => "{CUSTOMER_ID}",
-  "billingType" => "BOLETO",
-  "nextDueDate" => "2017-05-15",
-  "value" => 19.9,
-  "cycle" => "MONTHLY",
-  "description" => "Assinatura Plano Pró",
-  "discount" => array(
-    "value" => 10,
-    "dueDateLimitDays" => 0
-  ),
-  "fine" => array(
-    "value": 1
-  ),
-  "interest" => array(
-    "value": 2
-  )
+````php
+// Instancia o objeto
+$MelhorEnvio = new MelhorEnvio\MelhorEnvio(
+    "CLIENT ID",
+    "SECRET KEY",
+    "NOME DO APP",
+    "EMAIL TECNICO"
 );
 
+// Adiciona a url de callback  
+$MelhorEnvio->setCallbackURL("URL PARA RETORNO");
 
-Assinatura via cartão de credito
+// Solicita a autenticacao
+// O usuario será redirecionado para uma página da melhor envio.
+$MelhorEnvio->requestAuthorization();
+````
+
+Após a solicitação de permissão o usuário será redirecionado para a url de callback informada. Nessa url será passado um código via GET que será utilizado para a geração de token.
+
+````php
+// Solicita o token
+$retorno = $MelhorEnvio->requestToken($_GET["code"]);
+
+// Verifica se não ocorreu erro 
+if(!$retorno["error"])
+{
+    // Recupera as informações 
+    $retorno = $retorno["data"];
+}
+````
+
+Dentro do retorno data é retornado um array com as seguintes informações
+
+````
+(Array)
+[
+    "accessToken" => "TOKEN PARA REQUISIÇÕES",
+    "refreshToken" => "TOKEN PARA RENOVAÇÂO DO accessToken",
+    "tokenValidate" => "Data de validade do token (+ 30 dias)"
+]
+````
+
+## Renovando Token
+
+Exemplo de como renovar um token expirado 
 
 
-$dadosAssinatura = array(
-  "customer" => "{CUSTOMER_ID}",
-  "billingType" => "CREDIT_CARD",
-  "nextDueDate" => "2017-05-15",
-  "value" => 19.9,
-  "cycle" => "MONTHLY",
-  "description" => "Assinatura Plano Pró",
-  "creditCard" => array(
-    "holderName" => "marcelo h almeida",
-    "number" => "5162306219378829",
-    "expiryMonth" => "05",
-    "expiryYear" => "2021",
-    "ccv" => "318"
-  ),
-  "creditCardHolderInfo" => array(
-    "name" => "Marcelo Henrique Almeida",
-    "email" => "marcelo.almeida@gmail.com",
-    "cpfCnpj" => "24971563792",
-    "postalCode" => "89223-005",
-    "addressNumber" => "277",
-    "addressComplement" => null,
-    "phone" => "4738010919",
-    "mobilePhone" => "47998781877"
-  )
+````php
+// Solicita a atualizacao
+$resposta = $MelhorEnvio->refreshToken($refreshToken);
+
+// Verifica se deu certo
+if(!$resposta["error"])
+{
+    // Armaze os novos tokens 
+    $resposta["data"];
+}
+````
+
+
+## Calculando Frete
+
+Exemplo de como calcular um frete para um determindado produto. Caso haja mais de um produto é apenas replicar a linha onde configuramos o produto.
+
+````php
+// Informa o token
+$MelhorEnvio->setAccessToken("Access Token");
+
+// Instancia o produto
+$Product = new MelhorEnvio\Product();
+
+// Seta as informações do produto.
+// Pode duplicar esse item para adicionar mais produtos
+$Product->setProducts(
+    "Id do produto",
+    "Nome do produto",
+    "Largura",
+    "Altura",
+    "Comprimento",
+    "Peso",
+    "Valor do Produto",
+    "Quantidade"
 );
 
-*/
+// Realiza o calculo do frete
+$resposta = $MelhorEnvio->calculate("CEP do remetente", "CEP do destinatario", $Product);
 
-$assinatura = $asaas->assinatura->create(array $dadosAssinatura);
+// Verifica se deu certo
+if(!$resposta["error"])
+{
+    // As informações do frete estão no array 
+    $resposta["data"]
+}
+````
 
-// Atualiza os dados da assinatura
-$assinatura = $asaas->assinatura->update(123, array $dadosAssinatura);
+Veja um exemplo do array data retornado no calculo do frete.
 
-Listar notas fiscais das cobranças de uma assinatura
+````
+(Array)
+[
+    company" => [
+         "name" => Nome da transportadora
+         "image" => Imagem da logo da transportadora
+    ],
+    "service" => Nome do serviço (ex: Pac, Sedex...)
+    "timeDays" => Prazo em dias para entrega
+    "code" => Codigo do servico
+    "packages" => (Array) Lista dos pacotes que serão enviados
+]
+````
 
-/*
+## Etiquetas
 
-$parametos = array(
-'offset' => '',
-'limit' => '',
-'status' => '',
+Com esse SDK é possivel realizar a compra de etiquetas atraves da plataforma Melhor Envio. Lembrando que é necessário ter
 
-*/
+### Solicitando compra
 
-$assinatura = $asaas->assinatura->getNotaFiscal($id, array $parametos);
+Primeiro é necessário realizar uma solicitação de compra de etiqueta. Veja o código de exemplo:
 
-// Deleta uma assinatura
-$asaas->assinatura->delete(123);
-```
+````php
+// Informa o token
+$MelhorEnvio->setAccessToken("Access Token");
 
-
-Notificações
-------------
-
-```php
-// Retorna a listagem de notificações
-$notificacoes = $asaas->notificacao->getAll(array $filtros);
-
-// Retorna os dados da notificação de acordo com o Id
-$notificacao = $asaas->notificacao->getById(123);
-
-// Retorna a listagem de notificações de acordo com o Id do Cliente
-$notificacoes = $asaas->notificacao->getByCustomer($customer_id);
-
-// Insere uma nova notificação
-$notificacao = $asaas->notificacao->create(array $dadosNotificacao);
-
-// Atualiza os dados da notificação
-$notificacao = $asaas->notificacao->update(123, array $dadosNotificacao);
-
-// Deleta uma notificação
-$asaas->notificacao->delete(123);
-```
-
-Documentação Oficial
---------------------
-
-Obs.: Esta é uma API não oficial. Foi feita com base na documentação disponibilizada [neste link](https://asaasv3.docs.apiary.io/).
+// Destinatario e Remetente
+$Destinatario = new MelhorEnvio\User();
+$Remetente = new MelhorEnvio\User();
 
 
+// Adiciona as informações
+$Destinatario->setDocumentos("CPF");
 
-## Contributing
+$Destinatario->setInformacaoPessoal("NOME", "EMAIL", "CELULAR");
 
-Please see [CONTRIBUTING](https://github.com/codephix/asaas-sdk/blob/master/CONTRIBUTING.md) for details.
-
-
-Creditos
---------
-
-* [Codephix - www.codephix.com](http://www.codephix.com)
-
-
-Suporte
--------
-
-[Para reportar um novo bug por favor abra um novo Issue no github](https://github.com/codephix/asaas-sdk/issues)
+$Destinatario->setEndereco([
+    "endereco" => "Rua xyz",
+    "numero" => 123,
+    "bairro" => "Jardim São José",
+    "cidade" => "São Paulo",
+    "cep" => 11200363
+]);
 
 
-## Support
 
-###### Security: If you discover any security related issues, please email contato@codephix.com instead of using the issue tracker.
+// Adiciona as informações do remetente
+$Remetente->setDocumentos("CPF", "CNPJ", "INCRICAO ESTADUAL");
 
-Se você descobrir algum problema relacionado à segurança, envie um e-mail para contato@codephix.com em vez de usar o rastreador de problemas.
+$Remetente->setInformacaoPessoal("NOME", "EMAIL", "CELULAR");
 
-Thank you
+$Remetente->setEndereco([
+    "endereco" => "Rua xyz",
+    "numero" => 123,
+    "bairro" => "Jardim São José",
+    "cidade" => "São Paulo",
+    "cep" => 11200363
+]);
 
-## Credits
 
-- [Max Alex](https://github.com/codephix) (Developer)
-- [All Contributors](https://github.com/codephix/asaas-sdk/contributors) (This Rock)
 
-## License
+// Instancia o produto
+$Product = new MelhorEnvio\Product();
 
-The MIT License (MIT). Please see [License File](https://github.com/codephix/asaas-sdk/blob/master/LICENSE) for more information.
+// Seta as informações do produto.
+// Pode duplicar esse item para adicionar mais produtos
+$Product->setProducts(
+    "Id do produto",
+    "Nome do produto",
+    "Largura",
+    "Altura",
+    "Comprimento",
+    "Peso",
+    "Valor do Produto",
+    "Quantidade"
+);
+
+// Pacote 
+// Quando foi calculado o valor do frete, ele retorno os pacotes disponiveis
+$pacotes = []; 
+
+
+/**
+* OBS: 
+* Em caso de vários pacotes para a transportadora correios 
+* deverá realizar uma solicitação por pacote. As demais poderá 
+* realizar apenas uma solicitação passando um array de pacotes, 
+* da maneira que iremos fazer agora.
+**/
+
+// Percorre os pacotes 
+foreach ($packages as $package)
+{
+    $pacotes[] = [
+        "height" => $packages->dimensions->height,
+        "width" => $packages->dimensions->width,
+        "length" => $packages->dimensions->length,
+        "weight" => $packages->weight
+    ];
+}
+
+// Codigo do serviço de envio
+$code = "CODIGO DO SERVICO (RETORNADO NA BUSCA DO VALOR)";
+
+// Realiza a solicitação de compra das etiqueta
+$resposta = $MelhorEnvio->requestBuyTag($Destinatario, $Remetente, $Product, $pacote, $code, "Identificador do Pedido");
+
+// Verifica se deu certo
+if(!$resposta["error"])
+{
+    // Será retorno os ids da solicitação
+    // Armaze os ids para poder realizar a compra da etiqueta
+    $ids = $resposta["data"];
+}
+````
+
+## Processar Compra
+
+Com os ids da solicitação em mão você agora deverá realizar a compra da etiqueta. Para esse processo funcionar é necessário que possua saldo na plataforma. 
+
+````php
+// Verifica se o id retornado não é um array 
+if(!is_array($ids))
+{
+    // Força ser um array
+    $ids = [$ids];
+}
+
+// Realiza a compra da etiqueta
+$resposta = $MelhorEnvio->processBuyTag($ids);
+
+// Verifica se deu certo
+if(!$resposta["error"])
+{
+    // Apos o pagamento é necessário realizar a solicitação 
+    // para impressão da etiqueta.
+}
+````
+
+## Gerar Etiquetas
+
+Após a etiqueta ser comprada deve-se solicitar a impressão da mesma, onde a plataforma retornará um link com o arquivo PDF da etiqueta.
+
+````php
+// Solicita a impressão das etiquetas
+$resposta = $MelhorEnvio->printTag($ids);
+
+// Verifica se deu certo
+if(!$resposta["error"])
+{
+    // É retornado um array contendo a url para impressão 
+    $resposta["data"]
+    
+    // Exemplo do array retornado no item data
+    // (Array) ["url" => "URL DO PDF DA ETIQUETA"]
+}
+````
+
+## Recuperar Código de Rastreio
+
+Após ter gerado a etique é possivel solicitar o código de rastreio para informar ao cliente. 
+
+veja o código de exemplo: 
+
+````php
+// Gera o codigo de rastreio
+$rasteio = $MelhorEnvio->getTracking($ids);
+
+// Verifica se deu certo
+if(!$resposta["error"])
+{
+    // É retornado um array contendo os códigos 
+    $resposta["data"]
+}
+````
+
+Veja um exemplo do retorno na array data:
+
+````
+(Array)
+[
+    [
+        "tracking" => "CÓDIGO DE RASTREIO"
+    ],
+    [
+        "tracking" => "CÓDIGO DE RASTREIO"
+    ]
+]
+````
+
+Caso seja apenas um pacote será retornado apenas 1 item no array contendo o código de rastreio.

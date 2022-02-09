@@ -1,23 +1,23 @@
 {
-  "name": "codephix/melhorenvio-sdk",
-  "type"       : "library",
-  "description": "Melhor Envio PHP API Wrapper",
-  "keywords"   : ["Melhor"],
-  "homepage": "http://www.codephix.com",
+  "name": "codephix/melhor-envio",
+  "description": "SDK PHP de integração com o melhor envio",
+  "keywords": ["sdk", "php", "melhor envio", "frete"],
+  "homepage": "https://github.com/codephix/melhor-envio",
   "license": "MIT",
   "authors": [
     {
-      "name": "Max Alex",
-      "email": "contato@codephix.com.br",
-      "homepage": "https://www.codephix.com"
+      "name": "Igor Cacerez Albino",
+      "email": "igor.cacerez@gmail.com",
+      "role": "Developer"
     }
   ],
   "require": {
-    "php": "^7.2"
+    "php": ">=5.6.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "@stable"
   },
   "autoload": {
-    "psr-4": {
-      "CodePhix\\MelhorEnvio\\": "src"
-    }
+    "psr-4": { "MelhorEnvio\\" : "src/MelhorEnvio" }
   }
 }
