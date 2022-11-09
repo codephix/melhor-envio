@@ -20,7 +20,7 @@ class MelhorEnvio
     private $email; // Email tecnico
 
     // Constantes
-    private $url = "https://sandbox.melhorenvio.com.br/";
+    private $url = "https://melhorenvio.com.br/";
     private $urlRastreio = "https://www.melhorrastreio.com.br/rastreio/";
 
     // Url de retorno da plataforma
